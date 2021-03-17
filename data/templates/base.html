@@ -46,32 +46,28 @@
     <script src="{% static "js/moment.min.js"%}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script type="text/javascript">
-        // var chart_data = {{video_map_data|safe}}
-
         var chart_data =
             {
-              datasets: [
-                {
-                  label: 'Chart 1',
-                  data: [{x: new Date(2018, 9), y: 2},
-                          {x: new Date(2018, 10), y: 4},
-                          {x: new Date(2018, 11), y: 8},
-                          {x: new Date(2018, 12), y: 16}],
+              datasets: [{%for year, color in year_and_colors%}{
+                  label: '{{year}}',
+                  data: [{
+                          x: new Date(2018, 9),
+                          y: 2
+                      }, {
+                          x: new Date(2018, 10),
+                          y: 4
+                      }, {
+                          x: new Date(2018, 11),
+                          y: 8
+                      }, {
+                          x: new Date(2018, 12),
+                          y: 16
+                      }
+                  ],
                   showLine: true,
                   fill: false,
-                  borderColor: '{{colors.2}}'
-                },
-                {
-                  label: 'Chart 2',
-                  data: [{x: new Date(2018, 9), y: 3},
-                          {x: new Date(2018, 10), y: 4},
-                          {x: new Date(2018, 11), y: 6},
-                          {x: new Date(2018, 12), y: 9}],
-                  showLine: true,
-                  fill: false,
-                  borderColor: '{{colors.4}}'
-                }
-              ]
+                  borderColor: '{{color}}'
+              }{% if not forloop.last %},{%endif%}{%endfor%}]
             };
     </script>
     <script src="{% static "js/myChart.js"%}"></script>
