@@ -44,7 +44,17 @@ def home(request):
 
 def water(request):
     title = "Water"
-    all_water_data = Water.objects.all()
+
+    years_range = request.GET.get("years")
+    year = request.GET.get("year")
+    continuous = bool(request.GET.get("continuous"))
+    if years_range:
+        all_water_data = Water.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
+                                              service_start_date__year__lte=years_range.split("-")[1])
+    elif year:
+        all_water_data = Water.objects.filter(service_start_date__year=year)
+    else:
+        all_water_data = Water.objects.all()
     years = get_years(all_water_data)
 
     # Template ["label", "color", [["2018, 9", 46.8], ...]]
@@ -58,7 +68,11 @@ def water(request):
         for water_bill in all_water_data:
             midpoint_date = get_midpoint_of_dates(water_bill.service_start_date, water_bill.service_end_date)
             if midpoint_date.year == year:
-                water_data.append([str(midpoint_date.month), water_bill.avg_gallons_per_day])
+                if continuous:
+                    water_data.append([str(midpoint_date.year) + ", " + str(midpoint_date.month),
+                                       water_bill.avg_gallons_per_day])
+                else:
+                    water_data.append([str(midpoint_date.month), water_bill.avg_gallons_per_day])
 
         this_year_water_line_data.append(water_data)
 
