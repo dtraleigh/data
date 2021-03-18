@@ -48,26 +48,17 @@
     <script type="text/javascript">
         var chart_data =
             {
-              datasets: [{%for year, color in year_and_colors%}{
-                  label: '{{year}}',
-                  data: [{
-                          x: new Date(2018, 9),
-                          y: 2
-                      }, {
-                          x: new Date(2018, 10),
-                          y: 4
-                      }, {
-                          x: new Date(2018, 11),
-                          y: 8
-                      }, {
-                          x: new Date(2018, 12),
-                          y: 16
-                      }
+              datasets: [{%for datapoint in data%}{
+                  label: '{{datapoint.0}}',
+                  data: [{%for coords in datapoint.2%}{
+                          x: new Date({{coords.0}}),
+                          y: {{coords.1}}
+                      },{%endfor%}
                   ],
                   showLine: true,
                   fill: false,
-                  borderColor: '{{color}}'
-              }{% if not forloop.last %},{%endif%}{%endfor%}]
+                  borderColor: '{{datapoint.1}}'
+              }{%if not forloop.last%},{%endif%}{%endfor%}]
             };
     </script>
     <script src="{% static "js/myChart.js"%}"></script>

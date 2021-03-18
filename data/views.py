@@ -32,6 +32,11 @@ def get_years(object_data):
     return dataset_years
 
 
+def get_midpoint_of_dates(date1, date2):
+
+    return date1 + (date2 - date1)/2
+
+
 def home(request):
 
     return render(request, "home.html", {"colors": colors})
@@ -42,12 +47,29 @@ def water(request):
     all_water_data = Water.objects.all()
     years = get_years(all_water_data)
 
-    year_and_colors = zip(years, colors)
+    # Template ["label", "color", [["2018, 9", 46.8], ...]]
+    water_line_data = []
+    for count, year in enumerate(years):
+        this_year_water_line_data = []
+        this_year_water_line_data.append(str(year))
+        this_year_water_line_data.append(colors[count])
+
+        water_data = []
+        for water_bill in all_water_data:
+            midpoint_date = get_midpoint_of_dates(water_bill.service_start_date, water_bill.service_end_date)
+            if midpoint_date.year == year:
+                water_data.append([str(midpoint_date.year) + ", " +
+                                   str(midpoint_date.month), water_bill.avg_gallons_per_day])
+
+        this_year_water_line_data.append(water_data)
+
+        water_line_data.append(this_year_water_line_data)
+        break
+
+    logger.info(water_line_data)
 
     return render(request, "page.html", {"title": title,
-                                         "years": years,
-                                         "colors": colors,
-                                         "year_and_colors": year_and_colors
+                                         "data": water_line_data
                                          })
 
 
