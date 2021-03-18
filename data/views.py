@@ -58,13 +58,11 @@ def water(request):
         for water_bill in all_water_data:
             midpoint_date = get_midpoint_of_dates(water_bill.service_start_date, water_bill.service_end_date)
             if midpoint_date.year == year:
-                water_data.append([str(midpoint_date.year) + ", " +
-                                   str(midpoint_date.month), water_bill.avg_gallons_per_day])
+                water_data.append([str(midpoint_date.month), water_bill.avg_gallons_per_day])
 
         this_year_water_line_data.append(water_data)
 
         water_line_data.append(this_year_water_line_data)
-        break
 
     logger.info(water_line_data)
 
