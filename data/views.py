@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from data.models import *
 import logging, json
+import operator
+from django.db.models import Q
+from functools import reduce
 
 colors = ["rgba(0, 200, 0, 1)",  # Green
           "rgba(200, 0, 0, 1)",  # Red
@@ -44,13 +47,23 @@ def home(request):
 
 def water(request):
     title = "Water"
+    measurement = "Average Gallons / Day"
 
     years_range = request.GET.get("years")
     year = request.GET.get("year")
     continuous = bool(request.GET.get("continuous"))
     if years_range:
-        all_water_data = Water.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                              service_start_date__year__lte=years_range.split("-")[1])
+        if "-" in years_range:
+            all_water_data = Water.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
+                                                  service_start_date__year__lte=years_range.split("-")[1])
+        elif "," in years_range:
+            # Get all data then remove the ones that don't match these years
+            all_data = Water.objects.all()
+            all_water_data = []
+            for y in years_range.split(","):
+                for d in all_data:
+                    if d.service_start_date.year == int(y):
+                        all_water_data.append(d)
     elif year:
         all_water_data = Water.objects.filter(service_start_date__year=year)
     else:
@@ -78,11 +91,10 @@ def water(request):
 
         water_line_data.append(this_year_water_line_data)
 
-    logger.info(water_line_data)
-
     return render(request, "page.html", {"title": title,
-                                         "data": water_line_data
-                                         })
+                                         "measurement": measurement,
+                                         "data": water_line_data,
+                                         "chart_data": all_water_data})
 
 
 def gas(request):
