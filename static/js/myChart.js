@@ -1,18 +1,27 @@
-var ctx = document.getElementById("myChart");
+var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx, {
   type: 'scatter',
   data: chart_data,
   options: {
     scales: {
-      yAxes: [{
+      y: [{
         ticks: {
           beginAtZero: false
         }
       }],
-      xAxes: [{
+      x: [{
+        labels: ['test1', 'test2'],
         type: 'time',
+        display: true,
+        title: {
+          display: true,
+          text: 'Month'
+        },
         time: {
-          unit: 'month'
+          minUnit: 'month'
+        },
+        ticks: {
+          source: 'labels'
         }
       }]
     },
