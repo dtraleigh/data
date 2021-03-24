@@ -1,4 +1,26 @@
-var ctx = document.getElementById('myChart');
+var randomScalingFactor = function() {
+    return Math.round(Math.random() * 100);
+};
+
+var config = {
+    type: 'line',
+    data: chart_data,
+    options: {
+        responsive: true,
+        title: {
+            display: true,
+            text: 'Chart with Multiline Labels'
+        },
+    }
+};
+
+window.onload = function() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+}
+
+
+/*
 var myChart = new Chart(ctx, {
   type: 'scatter',
   data: chart_data,
@@ -10,19 +32,10 @@ var myChart = new Chart(ctx, {
         }
       }],
       x: [{
-        labels: ['test1', 'test2'],
-        type: 'time',
-        display: true,
         title: {
           display: true,
           text: 'Month'
         },
-        time: {
-          minUnit: 'month'
-        },
-        ticks: {
-          source: 'labels'
-        }
       }]
     },
     legend: {
@@ -36,4 +49,4 @@ var myChart = new Chart(ctx, {
       }
     }
   }
-});
+});*/

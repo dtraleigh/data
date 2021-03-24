@@ -44,14 +44,61 @@
 
     <!-- Graphs -->
     <script src="{% static "js/moment.min.js"%}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script type="text/javascript">
-        var chart_data =
+      var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+      };
+
+      var chart_data = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+            label: 'My First dataset',
+            fill: false,
+            backgroundColor: 'rgba(0, 200, 0, 1)',
+            borderColor: 'rgba(0, 200, 0, 1)',
+            data: [
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor()
+            ]
+        }, {
+            label: 'My Second dataset',
+            fill: false,
+            backgroundColor: 'rgba(200, 200, 0, 1)',
+            borderColor: 'rgba(200, 200, 0, 1)',
+            data: [
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor(),
+                randomScalingFactor()
+            ],
+        }]
+    }
+        /*var chart_data =
             {
+              "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
               datasets: [{%for datapoint in data%}{
                   label: '{{datapoint.0}}',
                   data: [{%for coords in datapoint.2%}{
-                          x: new Date({{coords.0}}),
+                          x: {{coords.0}},
                           y: {{coords.1}}
                       },{%endfor%}
                   ],
@@ -59,7 +106,7 @@
                   fill: false,
                   borderColor: '{{datapoint.1}}'
               }{%if not forloop.last%},{%endif%}{%endfor%}]
-            };
+            };*/
     </script>
     <script src="{% static "js/myChart.js"%}"></script>
   </body>

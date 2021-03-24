@@ -85,7 +85,7 @@ def water(request):
                     water_data.append([str(midpoint_date.year) + ", " + str(midpoint_date.month),
                                        water_bill.avg_gallons_per_day])
                 else:
-                    water_data.append([str(midpoint_date.month), water_bill.avg_gallons_per_day])
+                    water_data.append([str(midpoint_date.month - 1), water_bill.avg_gallons_per_day])
 
         this_year_water_line_data.append(water_data)
 
