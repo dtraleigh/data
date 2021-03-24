@@ -1,9 +1,7 @@
 from django.shortcuts import render
 from data.models import *
-import logging, json
-import operator
-from django.db.models import Q
-from functools import reduce
+import logging
+from datetime import datetime
 
 colors = ["rgba(0, 200, 0, 1)",  # Green
           "rgba(200, 0, 0, 1)",  # Red
@@ -49,9 +47,12 @@ def water(request):
     title = "Water"
     measurement = "Average Gallons / Day"
 
+    # use the years from the request else, use this year and last
     years_range = request.GET.get("years")
+    if not years_range:
+        years_range = str(datetime.now().year - 2) + "-" + str(datetime.now().year)
+
     year = request.GET.get("year")
-    continuous = bool(request.GET.get("continuous"))
     if years_range:
         if "-" in years_range:
             all_water_data = Water.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
@@ -81,11 +82,7 @@ def water(request):
         for water_bill in all_water_data:
             midpoint_date = get_midpoint_of_dates(water_bill.service_start_date, water_bill.service_end_date)
             if midpoint_date.year == year:
-                if continuous:
-                    water_data.append([str(midpoint_date.year) + ", " + str(midpoint_date.month),
-                                       water_bill.avg_gallons_per_day])
-                else:
-                    water_data.append([str(midpoint_date.month - 1), water_bill.avg_gallons_per_day])
+                water_data.append([str(midpoint_date.month - 1), water_bill.avg_gallons_per_day])
 
         this_year_water_line_data.append(water_data)
 
@@ -94,7 +91,7 @@ def water(request):
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": water_line_data,
-                                         "chart_data": all_water_data})
+                                         "table_data": all_water_data})
 
 
 def gas(request):
