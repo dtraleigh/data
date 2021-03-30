@@ -29,7 +29,13 @@
         <tr>
           <td>{{bill.service_start_date}}</td>
           <td>{{bill.service_end_date}}</td>
+          {%if bill.get_cname == "Water"%}
           <td>{{bill.avg_gallons_per_day}}</td>
+          {%elif bill.get_cname == "Gas"%}
+          <td>{{bill.therms_usage}}</td>
+          {%elif bill.get_cname == "Electricity"%}
+          <td>{{bill.kWh_usage}}</td>
+          {%endif%}
         </tr>
         {%endfor%}
       </tbody>

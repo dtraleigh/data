@@ -12,6 +12,9 @@ class Water(models.Model):
         verbose_name_plural = "Water"
         ordering = ['service_start_date']
 
+    def get_cname(self):
+        return self.__class__.__name__
+
     def __str__(self):
         return "Water %s-%s (%s)" % (self.service_start_date,
                                      self.service_end_date,
@@ -29,6 +32,9 @@ class Electricity(models.Model):
         verbose_name_plural = "Electricity"
         ordering = ['service_start_date']
 
+    def get_cname(self):
+        return self.__class__.__name__
+
     def __str__(self):
         return "Water %s-%s (%s)" % (self.service_start_date,
                                      self.service_end_date,
@@ -45,6 +51,9 @@ class Gas(models.Model):
     class Meta:
         verbose_name_plural = "Gas"
         ordering = ['service_start_date']
+
+    def get_cname(self):
+        return self.__class__.__name__
 
     def __str__(self):
         return "Water %s-%s (%s)" % (self.service_start_date,
