@@ -8,7 +8,7 @@ var config = {
     options: {
         responsive: true,
         title: {
-            display: true,
+            display: false,
             text: 'Chart with Multiline Labels'
         },
     }
