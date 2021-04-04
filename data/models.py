@@ -36,7 +36,7 @@ class Electricity(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Water %s-%s (%s)" % (self.service_start_date,
+        return "Elec %s-%s (%s)" % (self.service_start_date,
                                      self.service_end_date,
                                      self.id)
 
@@ -56,6 +56,23 @@ class Gas(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Water %s-%s (%s)" % (self.service_start_date,
+        return "Gas %s-%s (%s)" % (self.service_start_date,
                                      self.service_end_date,
+                                     self.id)
+
+
+class CarGas(models.Model):
+    submit_date = models.DateField(auto_now_add=True)
+    reading_date = models.DateField()
+    odometer_reading = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = "Car Gas"
+        ordering = ['reading_date']
+
+    def get_cname(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return "Car Gas %s (%s)" % (self.submit_date,
                                      self.id)
