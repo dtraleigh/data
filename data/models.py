@@ -61,18 +61,18 @@ class Gas(models.Model):
                                      self.id)
 
 
-class CarGas(models.Model):
+class CarMiles(models.Model):
     submit_date = models.DateField(auto_now_add=True)
     reading_date = models.DateField()
     odometer_reading = models.IntegerField()
 
     class Meta:
-        verbose_name_plural = "Car Gas"
+        verbose_name_plural = "Car Miles"
         ordering = ['reading_date']
 
     def get_cname(self):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Car Gas %s (%s)" % (self.submit_date,
-                                     self.id)
+        return "Car Miles %s (%s)" % (self.reading_date,
+                                      self.id)

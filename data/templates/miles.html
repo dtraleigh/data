@@ -23,23 +23,17 @@
     <table class="table table-striped table-sm">
       <thead>
         <tr>
-          <th>Service Start Date</th>
-          <th>Service End Date</th>
+          <th>Reading Date</th>
+          <th>Odometer Reading</th>
           <th>{{measurement}}</th>
         </tr>
       </thead>
       <tbody>
-        {%for bill in table_data%}
+        {%for reading, vmt in table_data%}
         <tr>
-          <td>{{bill.service_start_date}}</td>
-          <td>{{bill.service_end_date}}</td>
-          {%if bill.get_cname == "Water"%}
-          <td>{{bill.avg_gallons_per_day}}</td>
-          {%elif bill.get_cname == "Gas"%}
-          <td>{{bill.therms_usage}}</td>
-          {%elif bill.get_cname == "Electricity"%}
-          <td>{{bill.kWh_usage}}</td>
-          {%endif%}
+          <td>{{reading.reading_date}}</td>
+          <td>{{reading.odometer_reading}}</td>
+          <td>{{vmt}}</td>
         </tr>
         {%endfor%}
       </tbody>

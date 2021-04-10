@@ -9,6 +9,5 @@ urlpatterns = [
     path("water/", views.water, name="water"),
     path("gas/", views.gas, name="gas"),
     path("electricity/", views.electricity, name="electricity"),
-    path("car_gas/", views.car_gas, name="car_gas"),
     path("car_miles/", views.car_miles, name="car_miles"),
 ]

@@ -14,11 +14,11 @@ class GasAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Gas._meta.get_fields()]
 
 
-class CarGasAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in CarGas._meta.get_fields()]
+class CarMilesAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in CarMiles._meta.get_fields()]
 
 
 admin.site.register(Water, WaterAdmin)
 admin.site.register(Electricity, ElectricityAdmin)
 admin.site.register(Gas, GasAdmin)
-admin.site.register(CarGas, CarGasAdmin)
+admin.site.register(CarMiles, CarMilesAdmin)
