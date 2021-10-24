@@ -57,46 +57,90 @@ def get_measurements_in_year(all_data, year):
     return this_years_values
 
 
-def get_YTD_values(year):
-    currentMonth = datetime.now().month
-    all_water_data = Water.objects.all()
-    all_gas_data = Gas.objects.all()
-    all_elec_data = Electricity.objects.all()
-
+def get_YTD_values(year, data, typeM):
     # YTD is the sum of measurements that have a service date in the current year
-    year_to_date_values = []
+    currentMonth = datetime.now().month
 
-    water_sum = 0
-    for measurement in get_measurements_in_year(all_water_data, year):
-        water_sum += measurement.avg_gallons_per_day
-    year_to_date_values.append(water_sum)
+    if typeM == "water":
+        water_sum = 0
+        for measurement in get_measurements_in_year(data, year):
+            water_sum += measurement.avg_gallons_per_day
+        return water_sum
+    elif typeM == "gas":
+        gas_sum = 0
+        for measurement in get_measurements_in_year(data, year):
+            gas_sum += measurement.therms_usage
+        return gas_sum
+    elif typeM == "elec":
+        elec_sum = 0
+        for measurement in get_measurements_in_year(data, year):
+            elec_sum += measurement.kWh_usage
+        return elec_sum
+    elif typeM == "VMT":
+        # VMT is the difference between the most recent reading this year and the one from Jan of this year
+        return CarMiles.objects.get(reading_date__year=year, reading_date__month=currentMonth).odometer_reading \
+                  - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
+    else:
+        return None
 
-    gas_sum = 0
-    for measurement in get_measurements_in_year(all_gas_data, year):
-        gas_sum += measurement.therms_usage
-    year_to_date_values.append(gas_sum)
 
-    elec_sum = 0
-    for measurement in get_measurements_in_year(all_elec_data, year):
-        elec_sum += measurement.kWh_usage
-    year_to_date_values.append(elec_sum)
-
-    # VMT is the difference between the most recent reading this year and the one from Jan of this year
-    VMT_sum = CarMiles.objects.get(reading_date__year=year, reading_date__month=currentMonth).odometer_reading \
-              - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
-    year_to_date_values.append(VMT_sum)
-
-    return year_to_date_values
+def get_average(lst):
+    return sum(lst) / len(lst)
 
 
 def home(request):
     currentYear = datetime.now().year
+    all_water_data = Water.objects.all()
+    all_gas_data = Gas.objects.all()
+    all_elec_data = Electricity.objects.all()
+    all_vmt_data = CarMiles.objects.all()
 
-    year_to_date_values = get_YTD_values(currentYear)
-    prev_year_to_date_values = get_YTD_values(currentYear - 1)
+    year_to_date_values = [get_YTD_values(currentYear, all_water_data, "water"),
+                           get_YTD_values(currentYear, all_gas_data, "gas"),
+                           get_YTD_values(currentYear, all_elec_data, "elec"),
+                           get_YTD_values(currentYear, all_water_data, "VMT")]
+    prev_year_to_date_values = [get_YTD_values(currentYear - 1, all_water_data, "water"),
+                                get_YTD_values(currentYear - 1, all_gas_data, "gas"),
+                                get_YTD_values(currentYear - 1, all_elec_data, "elec"),
+                                get_YTD_values(currentYear - 1, all_water_data, "VMT")]
+
+    avg_ytd_values = []
+
+    water_years = list(set([x.service_start_date.year for x in all_water_data]))
+    water_years.sort()
+    del water_years[-1]
+    prev_years_water_values = []
+    for year in water_years:
+        prev_years_water_values.append(get_YTD_values(year, all_water_data, "water"))
+    avg_ytd_values.append(round(get_average(prev_years_water_values), 1))
+
+    gas_years = list(set([y.service_start_date.year for y in all_gas_data]))
+    gas_years.sort()
+    del gas_years[-1]
+    prev_years_gas_values = []
+    for year in gas_years:
+        prev_years_gas_values.append(get_YTD_values(year, all_gas_data, "gas"))
+    avg_ytd_values.append(round(get_average(prev_years_gas_values), 1))
+
+    elec_years = list(set([z.service_start_date.year for z in all_elec_data]))
+    elec_years.sort()
+    del elec_years[-1]
+    prev_years_elec_values = []
+    for year in elec_years:
+        prev_years_elec_values.append(get_YTD_values(year, all_elec_data, "elec"))
+    avg_ytd_values.append(round(get_average(prev_years_elec_values), 1))
+
+    vmt_years = list(set([a.reading_date.year for a in all_vmt_data]))
+    vmt_years.sort()
+    del vmt_years[-1]
+    prev_years_vmt_values = []
+    for year in vmt_years:
+        prev_years_vmt_values.append(get_YTD_values(year, all_vmt_data, "VMT"))
+    avg_ytd_values.append(round(get_average(prev_years_vmt_values), 1))
 
     return render(request, "home.html", {"year_to_date_values": year_to_date_values,
-                                         "prev_year_to_date_values": prev_year_to_date_values})
+                                         "prev_year_to_date_values": prev_year_to_date_values,
+                                         "avg_ytd_values": avg_ytd_values})
 
 
 def water(request):

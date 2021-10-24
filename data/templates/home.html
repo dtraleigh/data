@@ -47,11 +47,10 @@
           {%endfor%}
         </tr>
         <tr>
-          <td>Avg YTD (all)</td>
-          <td>libero</td>
-          <td>Sed</td>
-          <td>cursus</td>
-          <td>ante</td>
+          <td>Prev YTD (all avg.)</td>
+          {%for prev_YTD_all in avg_ytd_values%}
+            <td>{{prev_YTD_all}}</td>
+          {%endfor%}
         </tr>
       </tbody>
     </table>
