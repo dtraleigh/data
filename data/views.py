@@ -45,9 +45,58 @@ def requested_years_to_use(years_range):
     return years_range
 
 
-def home(request):
+def get_measurements_in_year(all_data, year):
+    this_years_values = []
 
-    return render(request, "home.html", {"colors": colors})
+    # To account for possible service start dates and end dates in different years,
+    # use the midpoint
+    for measurement in all_data:
+        if get_midpoint_of_dates(measurement.service_start_date, measurement.service_end_date).year == year:
+            this_years_values.append(measurement)
+
+    return this_years_values
+
+
+def get_YTD_values(year):
+    currentMonth = datetime.now().month
+    all_water_data = Water.objects.all()
+    all_gas_data = Gas.objects.all()
+    all_elec_data = Electricity.objects.all()
+
+    # YTD is the sum of measurements that have a service date in the current year
+    year_to_date_values = []
+
+    water_sum = 0
+    for measurement in get_measurements_in_year(all_water_data, year):
+        water_sum += measurement.avg_gallons_per_day
+    year_to_date_values.append(water_sum)
+
+    gas_sum = 0
+    for measurement in get_measurements_in_year(all_gas_data, year):
+        gas_sum += measurement.therms_usage
+    year_to_date_values.append(gas_sum)
+
+    elec_sum = 0
+    for measurement in get_measurements_in_year(all_elec_data, year):
+        elec_sum += measurement.kWh_usage
+    year_to_date_values.append(elec_sum)
+
+    # VMT is the difference between the most recent reading this year and the one from Jan of this year
+    VMT_sum = CarMiles.objects.get(reading_date__year=year, reading_date__month=currentMonth).odometer_reading \
+              - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
+    year_to_date_values.append(VMT_sum)
+
+    return year_to_date_values
+
+
+def home(request):
+    currentYear = datetime.now().year
+
+    year_to_date_values = get_YTD_values(currentYear)
+    prev_year_to_date_values = get_YTD_values(currentYear - 1)
+
+    return render(request, "home.html", {"year_to_date_values": year_to_date_values,
+                                         "prev_year_to_date_values": prev_year_to_date_values})
 
 
 def water(request):
@@ -258,14 +307,7 @@ def car_miles(request):
         for month_count, month in enumerate(year[2]):
             month[1] = VMT[year_count * 12 + month_count]
 
-    # Zipping a list of all readings, all_CarMiles_data, with a new list of just the VMTs from VMT_car_miles_line_data
-    just_VMTs = []
-    for year in car_miles_line_data:
-        for month in year[2]:
-            just_VMTs.append(month[1])
-    # logger.info(car_miles_line_data)
-
-    table_data = zip(all_CarMiles_data, just_VMTs)
+    table_data = zip(all_CarMiles_data, VMT)
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,
