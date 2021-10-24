@@ -109,33 +109,25 @@ def home(request):
     water_years = list(set([x.service_start_date.year for x in all_water_data]))
     water_years.sort()
     del water_years[-1]
-    prev_years_water_values = []
-    for year in water_years:
-        prev_years_water_values.append(get_YTD_values(year, all_water_data, "water"))
+    prev_years_water_values = [get_YTD_values(year, all_water_data, "water") for year in water_years]
     avg_ytd_values.append(round(get_average(prev_years_water_values), 1))
 
     gas_years = list(set([y.service_start_date.year for y in all_gas_data]))
     gas_years.sort()
     del gas_years[-1]
-    prev_years_gas_values = []
-    for year in gas_years:
-        prev_years_gas_values.append(get_YTD_values(year, all_gas_data, "gas"))
+    prev_years_gas_values = [get_YTD_values(year, all_gas_data, "gas") for year in gas_years]
     avg_ytd_values.append(round(get_average(prev_years_gas_values), 1))
 
     elec_years = list(set([z.service_start_date.year for z in all_elec_data]))
     elec_years.sort()
     del elec_years[-1]
-    prev_years_elec_values = []
-    for year in elec_years:
-        prev_years_elec_values.append(get_YTD_values(year, all_elec_data, "elec"))
+    prev_years_elec_values = [get_YTD_values(year, all_elec_data, "elec") for year in elec_years]
     avg_ytd_values.append(round(get_average(prev_years_elec_values), 1))
 
     vmt_years = list(set([a.reading_date.year for a in all_vmt_data]))
     vmt_years.sort()
     del vmt_years[-1]
-    prev_years_vmt_values = []
-    for year in vmt_years:
-        prev_years_vmt_values.append(get_YTD_values(year, all_vmt_data, "VMT"))
+    prev_years_vmt_values = [get_YTD_values(year, all_vmt_data, "VMT") for year in vmt_years]
     avg_ytd_values.append(round(get_average(prev_years_vmt_values), 1))
 
     return render(request, "home.html", {"year_to_date_values": year_to_date_values,
