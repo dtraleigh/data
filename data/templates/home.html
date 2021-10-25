@@ -29,10 +29,26 @@
       <tbody>
         <tr>
           <td>Trending</td>
-          <td>Lorem</td>
-          <td>ipsum</td>
-          <td>dolor</td>
-          <td>sit</td>
+          {%if year_to_date_values.0 < avg_ytd_values.0%}
+            <td><span data-feather="arrow-down-right"></span></td>
+          {%else%}
+            <td><span data-feather="arrow-up-right"></span></td>
+          {%endif%}
+          {%if year_to_date_values.1 < avg_ytd_values.1%}
+            <td><span data-feather="arrow-down-right"></span></td>
+          {%else%}
+            <td><span data-feather="arrow-up-right"></span></td>
+          {%endif%}
+          {%if year_to_date_values.2 < avg_ytd_values.2%}
+            <td><span data-feather="arrow-down-right"></span></td>
+          {%else%}
+            <td><span data-feather="arrow-up-right"></span></td>
+          {%endif%}
+          {%if year_to_date_values.3 < avg_ytd_values.3%}
+            <td><span data-feather="arrow-down-right"></span></td>
+          {%else%}
+            <td><span data-feather="arrow-up-right"></span></td>
+          {%endif%}
         </tr>
         <tr>
           <td>YTD</td>
