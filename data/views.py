@@ -46,10 +46,10 @@ def requested_years_to_use(years_range):
 
 
 def get_measurements_in_year(all_data, year):
+    # Returns a list of all the measurements within a given year
     this_years_values = []
 
-    # To account for possible service start dates and end dates in different years,
-    # use the midpoint
+    # To account for possible service start dates and end dates in different years, use the midpoint
     for measurement in all_data:
         if get_midpoint_of_dates(measurement.service_start_date, measurement.service_end_date).year == year:
             this_years_values.append(measurement)
