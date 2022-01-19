@@ -92,19 +92,19 @@ def get_YTD_values_for_any_year(year, data, typeM):
     if typeM == "water":
         water_sum = 0
         all_water_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_water_measurements_in_year[:currentMonth]:
+        for measurement in all_water_measurements_in_year[:currentMonth-1]:
             water_sum += measurement.avg_gallons_per_day
         return water_sum
     elif typeM == "gas":
         gas_sum = 0
         all_gas_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_gas_measurements_in_year[:currentMonth]:
+        for measurement in all_gas_measurements_in_year[:currentMonth-1]:
             gas_sum += measurement.therms_usage
         return gas_sum
     elif typeM == "elec":
         elec_sum = 0
         all_elec_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_elec_measurements_in_year[:currentMonth]:
+        for measurement in all_elec_measurements_in_year[:currentMonth-1]:
             elec_sum += measurement.kWh_usage
         return elec_sum
     elif typeM == "VMT":
