@@ -18,6 +18,12 @@ colors = ["rgba(0, 200, 0, 1)",  # Green
 
 logger = logging.getLogger("django")
 
+measurement_units = {
+    "Water": "avg_gallons_per_day",
+    "Electricity": "kWh_usage",
+    "Gas": "therms_usage"
+}
+
 
 def get_years_list_from_data(object_data):
     # Returns a sorted list of years found across all service dates
@@ -85,29 +91,18 @@ def get_YTD_values(data, typeM):
         return None
 
 
-def get_YTD_values_for_any_year(year, data, typeM):
+def get_YTD_values_for_any_year(year, data):
     # Get the sum of measurements that have a service date in the year given
     currentMonth = datetime.now().month
+    data_type = type(data[0]).__name__
 
-    if typeM == "water":
-        water_sum = 0
-        all_water_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_water_measurements_in_year[:currentMonth-1]:
-            water_sum += measurement.avg_gallons_per_day
-        return water_sum
-    elif typeM == "gas":
-        gas_sum = 0
-        all_gas_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_gas_measurements_in_year[:currentMonth-1]:
-            gas_sum += measurement.therms_usage
-        return gas_sum
-    elif typeM == "elec":
-        elec_sum = 0
-        all_elec_measurements_in_year = get_measurements_in_year(data, year)
-        for measurement in all_elec_measurements_in_year[:currentMonth-1]:
-            elec_sum += measurement.kWh_usage
-        return elec_sum
-    elif typeM == "VMT":
+    if data_type != "CarMiles":
+        measurement_sum = 0
+        all_measurements_in_year = get_measurements_in_year(data, year)
+        for measurement in all_measurements_in_year[:currentMonth - 1]:
+            measurement_sum += getattr(measurement, measurement_units[data_type])
+        return measurement_sum
+    elif data_type == "CarMiles":
         # VMT is the difference between the most recent reading this year and the one from Jan of this year
         return CarMiles.objects.get(reading_date__year=year, reading_date__month=currentMonth).odometer_reading \
                   - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
@@ -130,10 +125,10 @@ def home(request):
                            get_YTD_values(all_gas_data, "gas"),
                            get_YTD_values(all_elec_data, "elec"),
                            get_YTD_values(all_water_data, "VMT")]
-    prev_year_to_date_values = [get_YTD_values_for_any_year(currentYear - 1, all_water_data, "water"),
-                                get_YTD_values_for_any_year(currentYear - 1, all_gas_data, "gas"),
-                                get_YTD_values_for_any_year(currentYear - 1, all_elec_data, "elec"),
-                                get_YTD_values_for_any_year(currentYear - 1, all_water_data, "VMT")]
+    prev_year_to_date_values = [get_YTD_values_for_any_year(currentYear - 1, all_water_data),
+                                get_YTD_values_for_any_year(currentYear - 1, all_gas_data),
+                                get_YTD_values_for_any_year(currentYear - 1, all_elec_data),
+                                get_YTD_values_for_any_year(currentYear - 1, all_water_data)]
 
     avg_ytd_values = []
 
