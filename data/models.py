@@ -10,15 +10,13 @@ class Water(models.Model):
 
     class Meta:
         verbose_name_plural = "Water"
-        ordering = ['service_start_date']
+        ordering = ["service_start_date"]
 
     def get_cname(self):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Water %s-%s (%s)" % (self.service_start_date,
-                                     self.service_end_date,
-                                     self.id)
+        return f"Water {self.service_start_date}-{self.service_end_date} ({self.id})"
 
 
 class Electricity(models.Model):
@@ -30,15 +28,13 @@ class Electricity(models.Model):
 
     class Meta:
         verbose_name_plural = "Electricity"
-        ordering = ['service_start_date']
+        ordering = ["service_start_date"]
 
     def get_cname(self):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Elec %s-%s (%s)" % (self.service_start_date,
-                                     self.service_end_date,
-                                     self.id)
+        return f"Elec {self.service_start_date}-{self.service_end_date} ({self.id})"
 
 
 class Gas(models.Model):
@@ -50,15 +46,13 @@ class Gas(models.Model):
 
     class Meta:
         verbose_name_plural = "Gas"
-        ordering = ['service_start_date']
+        ordering = ["service_start_date"]
 
     def get_cname(self):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Gas %s-%s (%s)" % (self.service_start_date,
-                                     self.service_end_date,
-                                     self.id)
+        return f"Gas {self.service_start_date}-{self.service_end_date} ({self.id})"
 
 
 class CarMiles(models.Model):
@@ -68,11 +62,10 @@ class CarMiles(models.Model):
 
     class Meta:
         verbose_name_plural = "Car Miles"
-        ordering = ['reading_date']
+        ordering = ["reading_date"]
 
     def get_cname(self):
         return self.__class__.__name__
 
     def __str__(self):
-        return "Car Miles %s (%s)" % (self.reading_date,
-                                      self.id)
+        return f"Car Miles {self.reading_date} ({self.id})"

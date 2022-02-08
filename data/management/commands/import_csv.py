@@ -20,11 +20,11 @@ class Command(BaseCommand):
             # print(row)
 
             if row[0]:
-                bill_date = datetime.datetime.strptime(row[0], '%m/%d/%Y').date()
+                bill_date = datetime.datetime.strptime(row[0], "%m/%d/%Y").date()
             else:
                 bill_date = None
-            service_start_date = datetime.datetime.strptime(row[1], '%m/%d/%Y').date()
-            service_end_date = datetime.datetime.strptime(row[2], '%m/%d/%Y').date()
+            service_start_date = datetime.datetime.strptime(row[1], "%m/%d/%Y").date()
+            service_end_date = datetime.datetime.strptime(row[2], "%m/%d/%Y").date()
 
             # Water.objects.create(bill_date=bill_date,
             #                      service_start_date=service_start_date,

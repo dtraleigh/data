@@ -26,7 +26,7 @@ measurement_units = {
 
 
 def get_years_list_from_data(object_data):
-    # Returns a sorted list of years found across all service dates
+    """Returns a sorted list of years found across all service dates"""
     dataset_years = []
 
     for datapoint in object_data:
@@ -45,14 +45,14 @@ def get_midpoint_of_dates(date1, date2):
 
 
 def requested_years_to_use(years_range):
-    # use the years from the request else, use this year and last
+    """use the years from the request else, use this year and last"""
     if not years_range:
         return str(datetime.now().year - 2) + "-" + str(datetime.now().year)
     return years_range
 
 
 def get_measurements_in_year(all_data, year):
-    # Returns a list of all the measurements within a given year
+    """Returns a list of all the measurements within a given year"""
     this_years_values = []
 
     # To account for possible service start dates and end dates in different years, use the midpoint
@@ -64,7 +64,7 @@ def get_measurements_in_year(all_data, year):
 
 
 def get_YTD_values_for_any_year(year, data):
-    # Get the sum of measurements that have a service date in the year given
+    """Get the sum of measurements that have a service date in the year given"""
     currentMonth = datetime.now().month
     data_type = type(data[0]).__name__
 
@@ -83,7 +83,7 @@ def get_YTD_values_for_any_year(year, data):
 
 
 def get_YTD_values_for_all_years(data):
-    # Get the sum of measurements that have a service date across all past years
+    """Get the sum of measurements that have a service date across all past years"""
     data_type = type(data[0]).__name__
 
     if data_type != "CarMiles":
@@ -170,8 +170,6 @@ def water(request):
         this_year_water_line_data.append(water_data)
 
         water_line_data.append(this_year_water_line_data)
-    # logger.info("water_line_data")
-    # logger.info(water_line_data)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -304,8 +302,6 @@ def car_miles(request):
 
     for count, o in enumerate(l):
         VMT.append(o-k[count])
-    # logger.info("VMT")
-    # logger.info(VMT)
 
     # Create a year, here we add the year and color, not the VMT value just yet
     # Template ["label", "color", [["2018, 9", 46.8], ...]]
@@ -328,12 +324,9 @@ def car_miles(request):
     # Need to remove the last month
     car_miles_line_data[-1][2].pop()
 
-    # logger.info("car_miles_line_data")
-    # logger.info(car_miles_line_data)
-
-    # At this point, we have [['2020', 'rgba(0, 200, 0, 1)', [['0', 0], ['1', 0], ['2', 0], ['3', 0],
-    # ['4', 0], ['5', 0], ['6', 0], ['7', 0], ['8', 0], ['9', 0], ['10', 0],
-    # ['11', 0]]], ['2021', 'rgba(200, 0, 0, 1)', [['0', 0], ['1', 0], ['2', 0], ['3', 0]]]]
+    # At this point, we have [["2020", "rgba(0, 200, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0],
+    # ["4", 0], ["5", 0], ["6", 0], ["7", 0], ["8", 0], ["9", 0], ["10", 0],
+    # ["11", 0]]], ["2021", "rgba(200, 0, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0]]]]
     # Need to change odometer_reading to VMT for the month
     for year_count, year in enumerate(car_miles_line_data):
         for month_count, month in enumerate(year[2]):
