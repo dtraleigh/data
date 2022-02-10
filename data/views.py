@@ -83,7 +83,8 @@ def get_YTD_values_for_any_year(year, data):
 
 
 def get_YTD_values_for_all_years(data):
-    """Get the sum of measurements that have a service date across all past years"""
+    """Get the sum of measurements that have a service date across all past years
+    Does not include current year"""
     data_type = type(data[0]).__name__
 
     if data_type != "CarMiles":
