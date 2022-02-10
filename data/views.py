@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.apps import apps
 from data.models import *
 import logging
 from datetime import datetime
@@ -132,26 +133,34 @@ def home(request):
                                          "avg_ytd_values": avg_ytd_values})
 
 
+def get_measurement_data(data_name, year, years_range):
+    data_class = apps.get_model(app_label="data", model_name=data_name)
+
+    if year:
+        all_data = data_class.objects.filter(service_start_date__year=year)
+    elif years_range:
+        if "-" in years_range:
+            all_data = data_class.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
+                                                  service_start_date__year__lte=years_range.split("-")[1])
+        elif "," in years_range:
+            # Get all data then remove the ones that don't match these years
+            all_datapoints = data_class.objects.all()
+            all_data = []
+            for y in years_range.split(","):
+                for d in all_datapoints:
+                    if d.service_start_date.year == int(y):
+                        all_data.append(d)
+
+    return all_data
+
+
 def water(request):
     title = "Water"
     measurement = "Average Gallons / Day"
     years_range = requested_years_to_use(request.GET.get("years"))
     year = request.GET.get("year")
 
-    if year:
-        all_water_data = Water.objects.filter(service_start_date__year=year)
-    elif years_range:
-        if "-" in years_range:
-            all_water_data = Water.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                                  service_start_date__year__lte=years_range.split("-")[1])
-        elif "," in years_range:
-            # Get all data then remove the ones that don't match these years
-            all_data = Water.objects.all()
-            all_water_data = []
-            for y in years_range.split(","):
-                for d in all_data:
-                    if d.service_start_date.year == int(y):
-                        all_water_data.append(d)
+    all_water_data = get_measurement_data("Water", year, years_range)
 
     years = get_years_list_from_data(all_water_data)
 
@@ -184,20 +193,7 @@ def gas(request):
     years_range = requested_years_to_use(request.GET.get("years"))
     year = request.GET.get("year")
 
-    if year:
-        all_gas_data = Gas.objects.filter(service_start_date__year=year)
-    elif years_range:
-        if "-" in years_range:
-            all_gas_data = Gas.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                                  service_start_date__year__lte=years_range.split("-")[1])
-        elif "," in years_range:
-            # Get all data then remove the ones that don't match these years
-            all_data = Gas.objects.all()
-            all_gas_data = []
-            for y in years_range.split(","):
-                for d in all_data:
-                    if d.service_start_date.year == int(y):
-                        all_gas_data.append(d)
+    all_gas_data = get_measurement_data("Gas", year, years_range)
 
     years = get_years_list_from_data(all_gas_data)
 
@@ -230,20 +226,7 @@ def electricity(request):
     years_range = requested_years_to_use(request.GET.get("years"))
     year = request.GET.get("year")
 
-    if year:
-        all_elec_data = Electricity.objects.filter(service_start_date__year=year)
-    elif years_range:
-        if "-" in years_range:
-            all_elec_data = Electricity.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                                       service_start_date__year__lte=years_range.split("-")[1])
-        elif "," in years_range:
-            # Get all data then remove the ones that don't match these years
-            all_data = Electricity.objects.all()
-            all_elec_data = []
-            for y in years_range.split(","):
-                for d in all_data:
-                    if d.service_start_date.year == int(y):
-                        all_elec_data.append(d)
+    all_elec_data = get_measurement_data("Electricity", year, years_range)
 
     years = get_years_list_from_data(all_elec_data)
 
@@ -276,20 +259,7 @@ def car_miles(request):
     years_range = requested_years_to_use(request.GET.get("years"))
     year = request.GET.get("year")
 
-    if year:
-        all_CarMiles_data = CarMiles.objects.filter(reading_date__year=year)
-    elif years_range:
-        if "-" in years_range:
-            all_CarMiles_data = CarMiles.objects.filter(reading_date__year__gte=years_range.split("-")[0],
-                                                        reading_date__year__lte=years_range.split("-")[1])
-        elif "," in years_range:
-            # Get all data then remove the ones that don't match these years
-            all_data = CarMiles.objects.all()
-            all_CarMiles_data = []
-            for y in years_range.split(","):
-                for d in all_data:
-                    if d.reading_date.year == int(y):
-                        all_CarMiles_data.append(d)
+    all_CarMiles_data = get_measurement_data("CarMiles", year, years_range)
 
     years = []
     for datapoint in all_CarMiles_data:
