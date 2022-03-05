@@ -37,9 +37,8 @@ def water(request):
     title = "Water"
     measurement = "Average Gallons / Day"
     years_range = requested_years_to_use(request.GET.get("years"))
-    year = request.GET.get("year")
 
-    all_water_data = get_measurement_data("Water", year, years_range)
+    all_water_data = get_measurement_data("Water", years_range)
 
     years = get_years_list_from_data(all_water_data)
 
@@ -55,9 +54,8 @@ def gas(request):
     title = "Natural Gas"
     measurement = "Therms per month"
     years_range = requested_years_to_use(request.GET.get("years"))
-    year = request.GET.get("year")
 
-    all_gas_data = get_measurement_data("Gas", year, years_range)
+    all_gas_data = get_measurement_data("Gas", years_range)
 
     years = get_years_list_from_data(all_gas_data)
 
@@ -73,9 +71,8 @@ def electricity(request):
     title = "Electricity"
     measurement = "Kilowatt hours used"
     years_range = requested_years_to_use(request.GET.get("years"))
-    year = request.GET.get("year")
 
-    all_elec_data = get_measurement_data("Electricity", year, years_range)
+    all_elec_data = get_measurement_data("Electricity", years_range)
 
     years = get_years_list_from_data(all_elec_data)
 
@@ -91,9 +88,8 @@ def car_miles(request):
     title = "Vehicle Miles Traveled"
     measurement = "Miles / Month"
     years_range = requested_years_to_use(request.GET.get("years"))
-    year = request.GET.get("year")
 
-    all_CarMiles_data = get_measurement_data("CarMiles", year, years_range)
+    all_CarMiles_data = get_measurement_data("CarMiles", years_range)
 
     years = []
     for datapoint in all_CarMiles_data:

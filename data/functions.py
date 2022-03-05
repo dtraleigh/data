@@ -1,4 +1,7 @@
 from datetime import datetime
+import operator
+from django.db.models import Q
+from functools import reduce
 
 from django.apps import apps
 from data.models import *
@@ -38,8 +41,7 @@ def get_years_list_from_data(object_data):
 
 
 def get_midpoint_of_dates(date1, date2):
-
-    return date1 + (date2 - date1)/2
+    return date1 + (date2 - date1) / 2
 
 
 def requested_years_to_use(years_range):
@@ -75,7 +77,7 @@ def get_YTD_values_for_any_year(year, data):
     elif data_type == "CarMiles":
         # VMT is the difference between the most recent reading this year and the one from Jan of this year
         return CarMiles.objects.get(reading_date__year=year, reading_date__month=currentMonth).odometer_reading \
-                  - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
+               - CarMiles.objects.get(reading_date__year=year, reading_date__month=1).odometer_reading
     else:
         return None
 
@@ -105,43 +107,36 @@ def get_average(lst):
     return sum(lst) / len(lst)
 
 
-def get_measurement_data(data_name, year, years_range):
+def get_measurement_data(data_name, years_range):
     data_class = apps.get_model(app_label="data", model_name=data_name)
 
     if data_name != "CarMiles":
-        if year:
-            all_data = data_class.objects.filter(service_start_date__year=year)
-        elif years_range:
-            if "-" in years_range:
-                all_data = data_class.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                                      service_start_date__year__lte=years_range.split("-")[1])
-            elif "," in years_range:
-                # Get all data then remove the ones that don't match these years
-                all_datapoints = data_class.objects.all()
-                all_data = []
-                for y in years_range.split(","):
-                    for d in all_datapoints:
-                        if d.service_start_date.year == int(y):
-                            all_data.append(d)
+        if "-" in years_range:
+            return data_class.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
+                                             service_start_date__year__lte=years_range.split("-")[1])
+        elif "," in years_range:
+            years = years_range.split(",")
+            return data_class.objects.filter(reduce(operator.or_,
+                                                    (Q(service_start_date__year__contains=y) for y in years)))
+        elif "-" not in years_range and "," not in years_range:
+            try:
+                return data_class.objects.filter(service_start_date__year=years_range)
+            except ValueError:
+                return None
 
-        return all_data
-    elif data_name == "CarMiles":
-        if year:
-            all_CarMiles_data = CarMiles.objects.filter(reading_date__year=year)
-        elif years_range:
-            if "-" in years_range:
-                all_CarMiles_data = CarMiles.objects.filter(reading_date__year__gte=years_range.split("-")[0],
-                                                            reading_date__year__lte=years_range.split("-")[1])
-            elif "," in years_range:
-                # Get all data then remove the ones that don't match these years
-                all_data = CarMiles.objects.all()
-                all_CarMiles_data = []
-                for y in years_range.split(","):
-                    for d in all_data:
-                        if d.reading_date.year == int(y):
-                            all_CarMiles_data.append(d)
-
-        return all_CarMiles_data
+    else:
+        if "-" in years_range:
+            return CarMiles.objects.filter(reading_date__year__gte=years_range.split("-")[0],
+                                           reading_date__year__lte=years_range.split("-")[1])
+        elif "," in years_range:
+            years = years_range.split(",")
+            return data_class.objects.filter(reduce(operator.or_,
+                                                    (Q(reading_date__year__contains=y) for y in years)))
+        elif "-" not in years_range and "," not in years_range:
+            try:
+                return data_class.objects.filter(reading_date__year=years_range)
+            except ValueError:
+                return None
 
 
 def create_line_data(years, all_data):
