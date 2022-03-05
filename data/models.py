@@ -16,7 +16,7 @@ class Water(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return f"Water {self.service_start_date}-{self.service_end_date} ({self.id})"
+        return f"{self.service_start_date} to {self.service_end_date} ({self.id})"
 
 
 class Electricity(models.Model):
@@ -34,7 +34,7 @@ class Electricity(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return f"Elec {self.service_start_date}-{self.service_end_date} ({self.id})"
+        return f"{self.service_start_date} to {self.service_end_date} ({self.id})"
 
 
 class Gas(models.Model):
@@ -52,7 +52,7 @@ class Gas(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return f"Gas {self.service_start_date}-{self.service_end_date} ({self.id})"
+        return f"{self.service_start_date} to {self.service_end_date} ({self.id})"
 
 
 class CarMiles(models.Model):
@@ -68,4 +68,4 @@ class CarMiles(models.Model):
         return self.__class__.__name__
 
     def __str__(self):
-        return f"Car Miles {self.reading_date} ({self.id})"
+        return f"{self.reading_date} ({self.id})"

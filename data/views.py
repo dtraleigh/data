@@ -48,7 +48,7 @@ def water(request):
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": water_line_data,
-                                         "table_data": all_water_data})
+                                         "table_data": all_water_data.order_by("-service_start_date")})
 
 
 def gas(request):
@@ -66,7 +66,7 @@ def gas(request):
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": gas_line_data,
-                                         "table_data": all_gas_data})
+                                         "table_data": all_gas_data.order_by("-service_start_date")})
 
 
 def electricity(request):
@@ -84,7 +84,7 @@ def electricity(request):
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": elec_line_data,
-                                         "table_data": all_elec_data})
+                                         "table_data": all_elec_data.order_by("-service_start_date")})
 
 
 def car_miles(request):
@@ -121,7 +121,7 @@ def car_miles(request):
         for month_count, month in enumerate(year[2]):
             month[1] = VMT[year_count * 12 + month_count]
 
-    table_data = zip(all_CarMiles_data, VMT)
+    table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT)
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,
