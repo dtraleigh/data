@@ -3,18 +3,22 @@ from data.models import *
 
 
 class WaterAdmin(admin.ModelAdmin):
+    ordering = ("-service_start_date",)
     list_display = [field.name for field in Water._meta.get_fields()]
 
 
 class ElectricityAdmin(admin.ModelAdmin):
+    ordering = ("-service_start_date",)
     list_display = [field.name for field in Electricity._meta.get_fields()]
 
 
 class GasAdmin(admin.ModelAdmin):
+    ordering = ("-service_start_date",)
     list_display = [field.name for field in Gas._meta.get_fields()]
 
 
 class CarMilesAdmin(admin.ModelAdmin):
+    ordering = ("-reading_date",)
     list_display = [field.name for field in CarMiles._meta.get_fields()]
 
 
