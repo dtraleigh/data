@@ -41,11 +41,12 @@ def water(request):
     all_water_data = get_measurement_data("Water", years_range)
     years = get_years_list_from_data(all_water_data)
     water_line_data = create_line_data(years, all_water_data)
+    all_water_data_sorted = all_water_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": water_line_data,
-                                         "table_data": all_water_data,
+                                         "table_data": all_water_data_sorted,
                                          "years_range": years_range})
 
 
@@ -57,11 +58,12 @@ def gas(request):
     all_gas_data = get_measurement_data("Gas", years_range)
     years = get_years_list_from_data(all_gas_data)
     gas_line_data = create_line_data(years, all_gas_data)
+    all_gas_data_sorted = all_gas_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": gas_line_data,
-                                         "table_data": all_gas_data,
+                                         "table_data": all_gas_data_sorted,
                                          "years_range": years_range})
 
 
@@ -73,11 +75,12 @@ def electricity(request):
     all_elec_data = get_measurement_data("Electricity", years_range)
     years = get_years_list_from_data(all_elec_data)
     elec_line_data = create_line_data(years, all_elec_data)
+    all_elec_data_sorted = all_elec_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": elec_line_data,
-                                         "table_data": all_elec_data,
+                                         "table_data": all_elec_data_sorted,
                                          "years_range": years_range})
 
 
@@ -115,7 +118,7 @@ def car_miles(request):
             for month_count, month in enumerate(year[2]):
                 month[1] = VMT[year_count * 12 + month_count]
 
-        table_data = zip(all_CarMiles_data, VMT)
+        table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT)
     else:
         car_miles_line_data = None
         table_data = None

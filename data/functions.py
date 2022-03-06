@@ -116,31 +116,28 @@ def get_measurement_data(data_name, years_range):
     if data_name != "CarMiles":
         if "-" in years_range:
             return data_class.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                             service_start_date__year__lte=years_range.split("-")[1]).order_by(
-                "-service_start_date")
+                                             service_start_date__year__lte=years_range.split("-")[1])
         elif "," in years_range:
             years = years_range.split(",")
             return data_class.objects.filter(reduce(operator.or_,
-                                                    (Q(service_start_date__year__contains=y) for y in years))).order_by(
-                "-service_start_date")
+                                                    (Q(service_start_date__year__contains=y) for y in years)))
         elif "-" not in years_range and "," not in years_range:
             try:
-                return data_class.objects.filter(service_start_date__year=years_range).order_by("-service_start_date")
+                return data_class.objects.filter(service_start_date__year=years_range)
             except ValueError:
                 return None
 
     else:
         if "-" in years_range:
             return CarMiles.objects.filter(reading_date__year__gte=years_range.split("-")[0],
-                                           reading_date__year__lte=years_range.split("-")[1]).order_by("-reading_date")
+                                           reading_date__year__lte=years_range.split("-")[1])
         elif "," in years_range:
             years = years_range.split(",")
             return data_class.objects.filter(reduce(operator.or_,
-                                                    (Q(reading_date__year__contains=y) for y in years))).order_by(
-                "-reading_date")
+                                                    (Q(reading_date__year__contains=y) for y in years)))
         elif "-" not in years_range and "," not in years_range:
             try:
-                return data_class.objects.filter(reading_date__year=years_range).order_by("-reading_date")
+                return data_class.objects.filter(reading_date__year=years_range)
             except ValueError:
                 return None
 
