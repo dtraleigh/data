@@ -95,18 +95,20 @@ def car_miles(request):
         for datapoint in all_CarMiles_data:
             years.append(datapoint.reading_date.year)
         years = list(set(years))
-        years.sort
+        years.sort()
 
         # To calculate VMT, we need monthA followed by monthB odometer reading
         # Trick is that if you want, ex: 2020 data, you need Jan 2021 datapoint to get Dec
         # First, get all points in a year. If there are 12 of them in the greatest year,
         # try to get the first month of the following year.
         VMT = []
-        # If a single year
-        if len(all_CarMiles_data) == 12:
-            next_jan = CarMiles.objects.filter(reading_date__year=int(years_range) + 1, reading_date__month=1)
+        # If there is a multiple of 12 datapoints (full years data)
+        if len(all_CarMiles_data) % 12 == 0:
+            next_jan = CarMiles.objects.filter(reading_date__year=int(years[-1]) + 1, reading_date__month=1)
             VMT_calc_data = all_CarMiles_data.union(next_jan)
-        VMT_calc_data_sorted = VMT_calc_data.order_by("reading_date")
+            VMT_calc_data_sorted = VMT_calc_data.order_by("reading_date")
+        else:
+            VMT_calc_data_sorted = all_CarMiles_data.order_by("reading_date")
         for count, datapoint in enumerate(VMT_calc_data_sorted):
             try:
                 VMT.append(VMT_calc_data_sorted[count+1].odometer_reading - datapoint.odometer_reading)
@@ -115,10 +117,11 @@ def car_miles(request):
 
         car_miles_line_data = create_line_data(years, all_CarMiles_data)
 
-        # Need to remove the last month
-        logger.info("car_miles_line_data before pop\n")
-        logger.info(car_miles_line_data)
-        # car_miles_line_data[-1][2].pop()
+        # Need to remove the last month if we have a partial year
+        # logger.info("car_miles_line_data before pop\n")
+        # logger.info(car_miles_line_data)
+        if len(all_CarMiles_data) % 12 != 0:
+            car_miles_line_data[-1][2].pop()
 
         # At this point, we have [["2020", "rgba(0, 200, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0],
         # ["4", 0], ["5", 0], ["6", 0], ["7", 0], ["8", 0], ["9", 0], ["10", 0],
@@ -126,10 +129,17 @@ def car_miles(request):
         # Need to change odometer_reading to VMT for the month
         for year_count, year in enumerate(car_miles_line_data):
             for month_count, month in enumerate(year[2]):
-                month[1] = VMT[year_count * 12 + month_count]
+                try:
+                    month[1] = VMT[year_count * 12 + month_count]
+                except IndexError:
+                    break
 
         # If we reverse the data, we need to reverse the VMT as well so they match
-        table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT[::-1])
+        # Again, don't need the last month if it's a partial year
+        if len(all_CarMiles_data) % 12 != 0:
+            table_data = zip(all_CarMiles_data.order_by("-reading_date")[1:], VMT[::-1])
+        else:
+            table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT[::-1])
     else:
         car_miles_line_data = None
         table_data = None
@@ -138,9 +148,9 @@ def car_miles(request):
     logger.info(car_miles_line_data)
     logger.info("\nVMT")
     logger.info(VMT)
-    # logger.info("\nall_CarMiles_data")
-    # for datapoint in all_CarMiles_data.order_by("-reading_date"):
-    #     logger.info(datapoint)
+    logger.info("\nall_CarMiles_data")
+    for datapoint in all_CarMiles_data.order_by("-reading_date"):
+        logger.info(datapoint)
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,
