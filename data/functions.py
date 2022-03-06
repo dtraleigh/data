@@ -109,7 +109,8 @@ def get_average(lst):
     return sum(lst) / len(lst)
 
 
-def get_measurement_data(data_name, years_range):
+def get_measurement_data_from_years(data_name, years_range):
+    """Returns a list of datapoints per the years given in the range. Sorting is model default"""
     data_class = apps.get_model(app_label="data", model_name=data_name)
     years_range = years_range.replace(" ", "")
 
