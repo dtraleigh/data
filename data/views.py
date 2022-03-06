@@ -92,37 +92,34 @@ def car_miles(request):
     car_miles_line_data = None
     table_data = None
 
-    VMT = []
-    for datapoint in all_CarMiles_data.order_by("reading_date"):
-        vmt_value = get_VMT_calculation(datapoint)
-        if vmt_value:
-            VMT.append(vmt_value)
+    if all_CarMiles_data:
+        VMT = []
+        for datapoint in all_CarMiles_data.order_by("reading_date"):
+            vmt_value = get_VMT_calculation(datapoint)
+            if vmt_value:
+                VMT.append(vmt_value)
 
-    # Create sorted list of years, ex: [2020, 2021, 2022]
-    years = []
-    for datapoint in all_CarMiles_data:
-        years.append(datapoint.reading_date.year)
-    years = list(set(years))
-    years.sort()
-    car_miles_line_data = create_car_line_data(years, all_CarMiles_data.order_by("reading_date"), VMT)
+        # Create sorted list of years, ex: [2020, 2021, 2022]
+        years = []
+        for datapoint in all_CarMiles_data:
+            years.append(datapoint.reading_date.year)
+        years = list(set(years))
+        years.sort()
+        car_miles_line_data = create_car_line_data(years, all_CarMiles_data.order_by("reading_date"), VMT)
 
-    # If we reverse the data, we need to reverse the VMT as well so they match
-    if len(all_CarMiles_data) % 12 != 0:
-        table_data = zip(all_CarMiles_data.order_by("-reading_date")[1:], VMT[::-1])
-    else:
-        table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT[::-1])
+        # If we reverse the data, we need to reverse the VMT as well so they match
+        if len(all_CarMiles_data) % 12 != 0:
+            table_data = zip(all_CarMiles_data.order_by("-reading_date")[1:], VMT[::-1])
+        else:
+            table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT[::-1])
 
-
-
-
-
-    logger.info("car_miles_line_data:")
-    logger.info(car_miles_line_data)
-    logger.info("\nVMT")
-    logger.info(VMT)
-    # logger.info("\nall_CarMiles_data")
-    # for datapoint in all_CarMiles_data.order_by("-reading_date"):
-    #     logger.info(datapoint)
+        # logger.info("car_miles_line_data:")
+        # logger.info(car_miles_line_data)
+        # logger.info("\nVMT")
+        # logger.info(VMT)
+        # logger.info("\nall_CarMiles_data")
+        # for datapoint in all_CarMiles_data.order_by("-reading_date"):
+        #     logger.info(datapoint)
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,

@@ -155,24 +155,14 @@ def create_line_data(years, all_data):
             this_year_line_data.append(colors[count])
 
             data = []
-            if data_type != "CarMiles":
-                for bill in all_data:
-                    midpoint_date = get_midpoint_of_dates(bill.service_start_date, bill.service_end_date)
-                    if midpoint_date.year == year:
-                        data.append([str(midpoint_date.month - 1), getattr(bill, measurement_units[data_type])])
+            for bill in all_data:
+                midpoint_date = get_midpoint_of_dates(bill.service_start_date, bill.service_end_date)
+                if midpoint_date.year == year:
+                    data.append([str(midpoint_date.month - 1), getattr(bill, measurement_units[data_type])])
 
-                this_year_line_data.append(data)
+            this_year_line_data.append(data)
 
-                line_data.append(this_year_line_data)
-            elif data_type == "CarMiles":
-                for reading in all_data:
-                    if reading.reading_date.year == year:
-                        # Will replace the 0 with the VMT value in the next for loop
-                        data.append([str(reading.reading_date.month - 1), 0])
-
-                this_year_line_data.append(data)
-
-                line_data.append(this_year_line_data)
+            line_data.append(this_year_line_data)
 
         return line_data
     else:
