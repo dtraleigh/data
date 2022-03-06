@@ -111,6 +111,7 @@ def get_average(lst):
 
 def get_measurement_data(data_name, years_range):
     data_class = apps.get_model(app_label="data", model_name=data_name)
+    years_range = years_range.replace(" ", "")
 
     if data_name != "CarMiles":
         if "-" in years_range:
