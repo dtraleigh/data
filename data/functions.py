@@ -177,3 +177,46 @@ def create_line_data(years, all_data):
         return line_data
     else:
         return None
+
+
+def get_VMT_calculation(datapoint):
+    try:
+        if datapoint.reading_date.month == 12:
+            next_months_datapoint = CarMiles.objects.get(reading_date__year=datapoint.reading_date.year + 1,
+                                                         reading_date__month=1)
+        else:
+            next_months_datapoint = CarMiles.objects.get(reading_date__year=datapoint.reading_date.year,
+                                                         reading_date__month=datapoint.reading_date.month + 1)
+        return next_months_datapoint.odometer_reading - datapoint.odometer_reading
+    except CarMiles.DoesNotExist:
+        return None
+
+
+def create_car_line_data(years, all_data, VMT):
+    """ Example:
+    [['2021', 'rgba(0, 200, 0, 1)', [['0', 0], ['1', 0], ['2', 0], ['3', 0], ['4', 0], ['5', 0], ['6', 0], ['7', 0],
+    ['8', 0], ['9', 0], ['10', 0], ['11', 0]]], ['2022', 'rgba(200, 0, 0, 1)', [['0', 0], ['1', 0], ['2',
+    0]]]] car_miles_line_data: [['2021', 'rgba(0, 200, 0, 1)', [['0', 550], ['1', 1203], ['2', 1722], ['3', 1864],
+    ['4', 1808], ['5', 1302], ['6', 2499], ['7', 1461], ['8', 741], ['9', 1508], ['10', 785], ['11', 1592]]],
+    ['2022', 'rgba(200, 0, 0, 1)', [['0', 391], ['1', 896]]]]
+    """
+    if all_data:
+        line_data = []
+        for count, year in enumerate(years):
+            this_year_line_data = []
+            this_year_line_data.append(str(year))
+            this_year_line_data.append(colors[count])
+
+            data = []
+            for reading in all_data:
+                if reading.reading_date.year == year:
+                    vmt_calculated_value = get_VMT_calculation(reading)
+                    if vmt_calculated_value:
+                        data.append([str(reading.reading_date.month - 1), vmt_calculated_value])
+
+            this_year_line_data.append(data)
+            line_data.append(this_year_line_data)
+
+        return line_data
+    else:
+        return None
