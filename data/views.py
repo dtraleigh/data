@@ -39,15 +39,14 @@ def water(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_water_data = get_measurement_data("Water", years_range)
-
     years = get_years_list_from_data(all_water_data)
-
     water_line_data = create_line_data(years, all_water_data)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": water_line_data,
-                                         "table_data": all_water_data.order_by("-service_start_date")})
+                                         "table_data": all_water_data,
+                                         "years_range": years_range})
 
 
 def gas(request):
@@ -56,15 +55,14 @@ def gas(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_gas_data = get_measurement_data("Gas", years_range)
-
     years = get_years_list_from_data(all_gas_data)
-
     gas_line_data = create_line_data(years, all_gas_data)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": gas_line_data,
-                                         "table_data": all_gas_data.order_by("-service_start_date")})
+                                         "table_data": all_gas_data,
+                                         "years_range": years_range})
 
 
 def electricity(request):
@@ -73,15 +71,14 @@ def electricity(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_elec_data = get_measurement_data("Electricity", years_range)
-
     years = get_years_list_from_data(all_elec_data)
-
     elec_line_data = create_line_data(years, all_elec_data)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
                                          "data": elec_line_data,
-                                         "table_data": all_elec_data.order_by("-service_start_date")})
+                                         "table_data": all_elec_data,
+                                         "years_range": years_range})
 
 
 def car_miles(request):
@@ -92,34 +89,39 @@ def car_miles(request):
     all_CarMiles_data = get_measurement_data("CarMiles", years_range)
 
     years = []
-    for datapoint in all_CarMiles_data:
-        years.append(datapoint.reading_date.year)
-    years = list(set(years))
-    years.sort
-
-    k = [j.odometer_reading for j in all_CarMiles_data]
-    l = [j.odometer_reading for j in all_CarMiles_data[1:]]
     VMT = []
+    if all_CarMiles_data:
+        for datapoint in all_CarMiles_data:
+            years.append(datapoint.reading_date.year)
+        years = list(set(years))
+        years.sort
 
-    for count, o in enumerate(l):
-        VMT.append(o-k[count])
+        k = [j.odometer_reading for j in all_CarMiles_data]
+        l = [j.odometer_reading for j in all_CarMiles_data[1:]]
 
-    car_miles_line_data = create_line_data(years, all_CarMiles_data)
+        for count, o in enumerate(l):
+            VMT.append(o-k[count])
 
-    # Need to remove the last month
-    car_miles_line_data[-1][2].pop()
+        car_miles_line_data = create_line_data(years, all_CarMiles_data)
 
-    # At this point, we have [["2020", "rgba(0, 200, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0],
-    # ["4", 0], ["5", 0], ["6", 0], ["7", 0], ["8", 0], ["9", 0], ["10", 0],
-    # ["11", 0]]], ["2021", "rgba(200, 0, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0]]]]
-    # Need to change odometer_reading to VMT for the month
-    for year_count, year in enumerate(car_miles_line_data):
-        for month_count, month in enumerate(year[2]):
-            month[1] = VMT[year_count * 12 + month_count]
+        # Need to remove the last month
+        car_miles_line_data[-1][2].pop()
 
-    table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT)
+        # At this point, we have [["2020", "rgba(0, 200, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0],
+        # ["4", 0], ["5", 0], ["6", 0], ["7", 0], ["8", 0], ["9", 0], ["10", 0],
+        # ["11", 0]]], ["2021", "rgba(200, 0, 0, 1)", [["0", 0], ["1", 0], ["2", 0], ["3", 0]]]]
+        # Need to change odometer_reading to VMT for the month
+        for year_count, year in enumerate(car_miles_line_data):
+            for month_count, month in enumerate(year[2]):
+                month[1] = VMT[year_count * 12 + month_count]
+
+        table_data = zip(all_CarMiles_data, VMT)
+    else:
+        car_miles_line_data = None
+        table_data = None
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,
                                           "data": car_miles_line_data,
-                                          "table_data": table_data})
+                                          "table_data": table_data,
+                                          "years_range": years_range})

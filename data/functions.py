@@ -29,15 +29,17 @@ measurement_units = {
 def get_years_list_from_data(object_data):
     """Returns a sorted list of years found across all service dates"""
     dataset_years = []
+    if object_data:
+        for datapoint in object_data:
+            dataset_years.append(datapoint.service_start_date.year)
+            dataset_years.append(datapoint.service_end_date.year)
 
-    for datapoint in object_data:
-        dataset_years.append(datapoint.service_start_date.year)
-        dataset_years.append(datapoint.service_end_date.year)
+        dataset_years = list(set(dataset_years))
+        dataset_years.sort()
 
-    dataset_years = list(set(dataset_years))
-    dataset_years.sort()
-
-    return dataset_years
+        return dataset_years
+    else:
+        return None
 
 
 def get_midpoint_of_dates(date1, date2):
@@ -113,60 +115,66 @@ def get_measurement_data(data_name, years_range):
     if data_name != "CarMiles":
         if "-" in years_range:
             return data_class.objects.filter(service_start_date__year__gte=years_range.split("-")[0],
-                                             service_start_date__year__lte=years_range.split("-")[1])
+                                             service_start_date__year__lte=years_range.split("-")[1]).order_by(
+                "-service_start_date")
         elif "," in years_range:
             years = years_range.split(",")
             return data_class.objects.filter(reduce(operator.or_,
-                                                    (Q(service_start_date__year__contains=y) for y in years)))
+                                                    (Q(service_start_date__year__contains=y) for y in years))).order_by(
+                "-service_start_date")
         elif "-" not in years_range and "," not in years_range:
             try:
-                return data_class.objects.filter(service_start_date__year=years_range)
+                return data_class.objects.filter(service_start_date__year=years_range).order_by("-service_start_date")
             except ValueError:
                 return None
 
     else:
         if "-" in years_range:
             return CarMiles.objects.filter(reading_date__year__gte=years_range.split("-")[0],
-                                           reading_date__year__lte=years_range.split("-")[1])
+                                           reading_date__year__lte=years_range.split("-")[1]).order_by("-reading_date")
         elif "," in years_range:
             years = years_range.split(",")
             return data_class.objects.filter(reduce(operator.or_,
-                                                    (Q(reading_date__year__contains=y) for y in years)))
+                                                    (Q(reading_date__year__contains=y) for y in years))).order_by(
+                "-reading_date")
         elif "-" not in years_range and "," not in years_range:
             try:
-                return data_class.objects.filter(reading_date__year=years_range)
+                return data_class.objects.filter(reading_date__year=years_range).order_by("-reading_date")
             except ValueError:
                 return None
 
 
 def create_line_data(years, all_data):
     """Template ["label", "color", [["2018, 9", 46.8], ...]]"""
-    data_type = type(all_data[0]).__name__
+    if all_data:
+        data_type = type(all_data[0]).__name__
 
-    line_data = []
-    for count, year in enumerate(years):
-        this_year_line_data = []
-        this_year_line_data.append(str(year))
-        this_year_line_data.append(colors[count])
+        line_data = []
+        for count, year in enumerate(years):
+            this_year_line_data = []
+            this_year_line_data.append(str(year))
+            this_year_line_data.append(colors[count])
 
-        data = []
-        if data_type != "CarMiles":
-            for bill in all_data:
-                midpoint_date = get_midpoint_of_dates(bill.service_start_date, bill.service_end_date)
-                if midpoint_date.year == year:
-                    data.append([str(midpoint_date.month - 1), getattr(bill, measurement_units[data_type])])
+            data = []
+            if data_type != "CarMiles":
+                for bill in all_data:
+                    midpoint_date = get_midpoint_of_dates(bill.service_start_date, bill.service_end_date)
+                    if midpoint_date.year == year:
+                        data.append([str(midpoint_date.month - 1), getattr(bill, measurement_units[data_type])])
 
-            this_year_line_data.append(data)
+                this_year_line_data.append(data)
 
-            line_data.append(this_year_line_data)
-        elif data_type == "CarMiles":
-            for reading in all_data:
-                if reading.reading_date.year == year:
-                    # Will replace the 0 with the VMT value in the next for loop
-                    data.append([str(reading.reading_date.month - 1), 0])
+                line_data.append(this_year_line_data)
+            elif data_type == "CarMiles":
+                for reading in all_data:
+                    if reading.reading_date.year == year:
+                        # Will replace the 0 with the VMT value in the next for loop
+                        data.append([str(reading.reading_date.month - 1), 0])
 
-            this_year_line_data.append(data)
+                this_year_line_data.append(data)
 
-            line_data.append(this_year_line_data)
+                line_data.append(this_year_line_data)
 
-    return line_data
+        return line_data
+    else:
+        return None
