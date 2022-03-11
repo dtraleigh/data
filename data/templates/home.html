@@ -28,7 +28,7 @@
       </thead>
       <tbody>
         <tr>
-          <td>Trending</td>
+          <td>Trending*</td>
           {%if year_to_date_values.0 < avg_ytd_values.0%}
             <td><span data-feather="arrow-down-right"></span></td>
           {%else%}
@@ -70,6 +70,7 @@
         </tr>
       </tbody>
     </table>
+    <p>*Trending is the direction against the current year's YTD value against all historical averages. "Prev YTD (all avg.)"</p>
   </div>
 </main>
 {% endblock %}
