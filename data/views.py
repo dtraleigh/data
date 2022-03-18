@@ -39,9 +39,13 @@ def water(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_water_data = get_measurement_data_from_years("Water", years_range)
+    if all_water_data:
+        all_water_data_sorted = all_water_data.order_by("-service_start_date")
+    else:
+        all_water_data_sorted = all_water_data
+
     years = get_years_list_from_data(all_water_data)
     water_line_data = create_line_data(years, all_water_data)
-    all_water_data_sorted = all_water_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -56,9 +60,13 @@ def gas(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_gas_data = get_measurement_data_from_years("Gas", years_range)
+    if all_gas_data:
+        all_gas_data_sorted = all_gas_data.order_by("-service_start_date")
+    else:
+        all_gas_data_sorted = all_gas_data
+
     years = get_years_list_from_data(all_gas_data)
     gas_line_data = create_line_data(years, all_gas_data)
-    all_gas_data_sorted = all_gas_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -73,9 +81,13 @@ def electricity(request):
     years_range = requested_years_to_use(request.GET.get("years"))
 
     all_elec_data = get_measurement_data_from_years("Electricity", years_range)
+    if all_elec_data:
+        all_elec_data_sorted = all_elec_data.order_by("-service_start_date")
+    else:
+        all_elec_data_sorted = all_elec_data
+
     years = get_years_list_from_data(all_elec_data)
     elec_line_data = create_line_data(years, all_elec_data)
-    all_elec_data_sorted = all_elec_data.order_by("-service_start_date")
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,

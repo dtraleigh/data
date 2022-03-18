@@ -47,9 +47,11 @@ def get_midpoint_of_dates(date1, date2):
 
 
 def requested_years_to_use(years_range):
-    """use the years from the request else, use this year and last"""
+    """use the years from the request else, use this year and last. Also, account for some special keywords"""
     if not years_range:
         return str(datetime.now().year - 2) + "-" + str(datetime.now().year)
+    elif years_range.lower() == "all":
+        return "2000-2100"
     return years_range
 
 
