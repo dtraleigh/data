@@ -44,8 +44,9 @@
     </script>
 
     <!-- Graphs -->
-    <script src="{% static "js/moment.min.js"%}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
     <script type="text/javascript">
       var chart_data = {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
@@ -53,6 +54,7 @@
         label: '{{datapoint.0}}',
         fill: false,
         borderColor: '{{datapoint.1}}',
+        tension: 0.2,
         data: [{%for coords in datapoint.2%}{{coords.1}}{%if not forloop.last%} {%endif%}{%if not forloop.last%},{%endif%}{%endfor%}]
         }{%if not forloop.last%},{%endif%}{%endfor%}
       ]
