@@ -3,50 +3,18 @@ var randomScalingFactor = function() {
 };
 
 var config = {
-    type: 'line',
+    type: "line",
     data: chart_data,
     options: {
         responsive: true,
         title: {
             display: false,
-            text: 'Chart with Multiline Labels'
+            text: "Chart with Multiline Labels"
         },
     }
 };
 
 window.onload = function() {
-    var ctx = document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById("myChart").getContext("2d");
     window.myLine = new Chart(ctx, config);
 }
-
-
-/*
-var myChart = new Chart(ctx, {
-  type: 'scatter',
-  data: chart_data,
-  options: {
-    scales: {
-      y: [{
-        ticks: {
-          beginAtZero: false
-        }
-      }],
-      x: [{
-        title: {
-          display: true,
-          text: 'Month'
-        },
-      }]
-    },
-    legend: {
-      display: true,
-    },
-    tooltips: {
-      callbacks: {
-        label: function(tooltipItem, data) {
-          return tooltipItem.yLabel;
-        },
-      }
-    }
-  }
-});*/
