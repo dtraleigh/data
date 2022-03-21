@@ -213,10 +213,28 @@ def create_avg_line_data(class_name):
 
         return avg_line_data_complete
     else:
-        return None
+        recent_year = get_most_recent_year_from_data(class_name)
+        first_year = get_earliest_year_from_data(class_name)
+        # Data from first_year to recent_year - 1
+        all_data_for_avg_line = data_class.objects.filter(reading_date__year__gte=first_year,
+                                                          reading_date__year__lt=recent_year)
+
+        all_month_data = []
+        # Go through each month of each year
+        for month in range(1, 13):
+            month_data_objects = [x for x in all_data_for_avg_line if x.reading_date.month == month]
+            month_data = [get_VMT_calculation(y) for y in month_data_objects]
+            avg = get_average(month_data)
+            all_month_data.append([f"{str(month - 1)}", avg])
+
+        avg_line_data_complete.append(all_month_data)
+
+        return avg_line_data_complete
 
 
 def get_VMT_calculation(datapoint):
+    """With any datapoint from CarMiles, return the VMT for that month. If you pass the most recent datapoint, we
+    can't calculate VMT. Ex: VMT for Feb = March Reading - Feb Reading. Readings are always taken on 1st of month"""
     try:
         if datapoint.reading_date.month == 12:
             next_months_datapoint = CarMiles.objects.get(reading_date__year=datapoint.reading_date.year + 1,

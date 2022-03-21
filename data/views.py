@@ -128,19 +128,14 @@ def car_miles(request):
         years.sort()
         car_miles_line_data = create_car_line_data(years, all_CarMiles_data.order_by("reading_date"), VMT)
 
+        avg_line = create_avg_line_data("CarMiles")
+        car_miles_line_data.append(avg_line)
+
         # If we reverse the data, we need to reverse the VMT as well so they match
         if len(all_CarMiles_data) % 12 != 0:
             table_data = zip(all_CarMiles_data.order_by("-reading_date")[1:], VMT[::-1])
         else:
             table_data = zip(all_CarMiles_data.order_by("-reading_date"), VMT[::-1])
-
-        # logger.info("car_miles_line_data:")
-        # logger.info(car_miles_line_data)
-        # logger.info("\nVMT")
-        # logger.info(VMT)
-        # logger.info("\nall_CarMiles_data")
-        # for datapoint in all_CarMiles_data.order_by("-reading_date"):
-        #     logger.info(datapoint)
 
     return render(request, "miles.html", {"title": title,
                                           "measurement": measurement,
