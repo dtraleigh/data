@@ -36,7 +36,7 @@ def home(request):
 def water(request):
     title = "Water"
     measurement = "Average Gallons / Day"
-    years_range = requested_years_to_use(request.GET.get("years"))
+    years_range = requested_years_to_use(request.GET.get("years"), "Water")
 
     all_water_data = get_measurement_data_from_years("Water", years_range)
     if all_water_data:
@@ -46,6 +46,9 @@ def water(request):
 
     years = get_years_list_from_data(all_water_data)
     water_line_data = create_line_data(years, all_water_data)
+
+    avg_line = create_avg_line_data("Water")
+    water_line_data.append(avg_line)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -57,7 +60,7 @@ def water(request):
 def gas(request):
     title = "Natural Gas"
     measurement = "Therms per month"
-    years_range = requested_years_to_use(request.GET.get("years"))
+    years_range = requested_years_to_use(request.GET.get("years"), "Gas")
 
     all_gas_data = get_measurement_data_from_years("Gas", years_range)
     if all_gas_data:
@@ -67,6 +70,9 @@ def gas(request):
 
     years = get_years_list_from_data(all_gas_data)
     gas_line_data = create_line_data(years, all_gas_data)
+
+    avg_line = create_avg_line_data("Gas")
+    gas_line_data.append(avg_line)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -78,7 +84,7 @@ def gas(request):
 def electricity(request):
     title = "Electricity"
     measurement = "Kilowatt hours used"
-    years_range = requested_years_to_use(request.GET.get("years"))
+    years_range = requested_years_to_use(request.GET.get("years"), "Electricity")
 
     all_elec_data = get_measurement_data_from_years("Electricity", years_range)
     if all_elec_data:
@@ -88,6 +94,9 @@ def electricity(request):
 
     years = get_years_list_from_data(all_elec_data)
     elec_line_data = create_line_data(years, all_elec_data)
+
+    avg_line = create_avg_line_data("Electricity")
+    elec_line_data.append(avg_line)
 
     return render(request, "page.html", {"title": title,
                                          "measurement": measurement,
@@ -99,7 +108,7 @@ def electricity(request):
 def car_miles(request):
     title = "Vehicle Miles Traveled"
     measurement = "Miles / Month"
-    years_range = requested_years_to_use(request.GET.get("years"))
+    years_range = requested_years_to_use(request.GET.get("years"), "CarMiles")
     all_CarMiles_data = get_measurement_data_from_years("CarMiles", years_range)
     car_miles_line_data = None
     table_data = None

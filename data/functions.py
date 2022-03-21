@@ -46,12 +46,12 @@ def get_midpoint_of_dates(date1, date2):
     return date1 + (date2 - date1) / 2
 
 
-def requested_years_to_use(years_range):
+def requested_years_to_use(years_range, data_class):
     """use the years from the request else, use this year and last. Also, account for some special keywords"""
     if not years_range:
         return str(datetime.now().year - 2) + "-" + str(datetime.now().year)
     elif years_range.lower() == "all":
-        return "2000-2100"
+        return f"{str(get_earliest_year_from_data(data_class))}-{str(get_most_recent_year_from_data(data_class))}"
     return years_range
 
 
@@ -146,7 +146,7 @@ def get_measurement_data_from_years(data_name, years_range):
 
 
 def create_line_data(years, all_data):
-    """Template ["label", "color", [["2018, 9", 46.8], ...]]"""
+    """Template ["label", "color", [["9", 46.8], ...]]"""
     if all_data:
         data_type = type(all_data[0]).__name__
 
@@ -167,6 +167,51 @@ def create_line_data(years, all_data):
             line_data.append(this_year_line_data)
 
         return line_data
+    else:
+        return None
+
+
+def get_most_recent_year_from_data(data_name):
+    data_class = apps.get_model(app_label="data", model_name=data_name)
+    if data_name != "CarMiles":
+        return data_class.objects.latest("service_start_date").service_start_date.year
+    else:
+        return data_class.objects.latest("reading_date").reading_date.year
+
+
+def get_earliest_year_from_data(data_name):
+    data_class = apps.get_model(app_label="data", model_name=data_name)
+    if data_name != "CarMiles":
+        return data_class.objects.earliest("service_start_date").service_start_date.year
+    else:
+        return data_class.objects.earliest("reading_date").reading_date.year
+
+
+def create_avg_line_data(class_name):
+    """Template ["label", "color", [["9", 46.8], ...]]"""
+    data_class = apps.get_model(app_label="data", model_name=class_name)
+
+    avg_line_data_complete = []
+    avg_line_data_complete.append("Average")
+    avg_line_data_complete.append("rgba(22, 51, 73, 0.8)")
+
+    if class_name != "CarMiles":
+        recent_year = get_most_recent_year_from_data(class_name)
+        first_year = get_earliest_year_from_data(class_name)
+        # Data from first_year to recent_year - 1
+        all_data_for_avg_line = data_class.objects.filter(service_start_date__year__gte=first_year,
+                                                          service_start_date__year__lt=recent_year)
+        all_month_data = []
+        # Go through each month of each year
+        for month in range(1, 13):
+            month_data_objects = [x for x in all_data_for_avg_line if get_midpoint_of_dates(x.service_start_date, x.service_end_date).month == month]
+            month_data = [getattr(y, measurement_units[class_name]) for y in month_data_objects]
+            avg = get_average(month_data)
+            all_month_data.append([f"{str(month - 1)}", avg])
+
+        avg_line_data_complete.append(all_month_data)
+
+        return avg_line_data_complete
     else:
         return None
 
