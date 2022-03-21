@@ -54,8 +54,9 @@
         label: '{{datapoint.0}}',
         fill: false,
         borderColor: '{{datapoint.1}}',
+        borderWidth: '{{datapoint.2}}',
         tension: 0.2,
-        data: [{%for coords in datapoint.2%}{{coords.1}}{%if not forloop.last%} {%endif%}{%if not forloop.last%},{%endif%}{%endfor%}]
+        data: [{%for coords in datapoint.3%}{{coords.1}}{%if not forloop.last%} {%endif%}{%if not forloop.last%},{%endif%}{%endfor%}]
         }{%if not forloop.last%},{%endif%}{%endfor%}
       ]
     }

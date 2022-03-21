@@ -146,7 +146,7 @@ def get_measurement_data_from_years(data_name, years_range):
 
 
 def create_line_data(years, all_data):
-    """Template ["label", "color", [["9", 46.8], ...]]"""
+    """Template ["label", "color", "borderWidth", [["9", 46.8], ...]]"""
     if all_data:
         data_type = type(all_data[0]).__name__
 
@@ -155,6 +155,7 @@ def create_line_data(years, all_data):
             this_year_line_data = []
             this_year_line_data.append(str(year))
             this_year_line_data.append(colors[count])
+            this_year_line_data.append(2)
 
             data = []
             for bill in all_data:
@@ -188,16 +189,18 @@ def get_earliest_year_from_data(data_name):
 
 
 def create_avg_line_data(class_name):
-    """Template ["label", "color", [["9", 46.8], ...]]"""
+    """Template ["label", "color", "borderWidth", [["9", 46.8], ...]]"""
     data_class = apps.get_model(app_label="data", model_name=class_name)
 
+    recent_year = get_most_recent_year_from_data(class_name)
+    first_year = get_earliest_year_from_data(class_name)
+
     avg_line_data_complete = []
-    avg_line_data_complete.append("Average")
-    avg_line_data_complete.append("rgba(22, 51, 73, 0.8)")
+    avg_line_data_complete.append(f"Average ({str(first_year)}-{str(recent_year-1)})")
+    avg_line_data_complete.append("rgba(22, 51, 73, 0.1)")
+    avg_line_data_complete.append(5)
 
     if class_name != "CarMiles":
-        recent_year = get_most_recent_year_from_data(class_name)
-        first_year = get_earliest_year_from_data(class_name)
         # Data from first_year to recent_year - 1
         all_data_for_avg_line = data_class.objects.filter(service_start_date__year__gte=first_year,
                                                           service_start_date__year__lt=recent_year)
@@ -213,8 +216,6 @@ def create_avg_line_data(class_name):
 
         return avg_line_data_complete
     else:
-        recent_year = get_most_recent_year_from_data(class_name)
-        first_year = get_earliest_year_from_data(class_name)
         # Data from first_year to recent_year - 1
         all_data_for_avg_line = data_class.objects.filter(reading_date__year__gte=first_year,
                                                           reading_date__year__lt=recent_year)
@@ -249,11 +250,11 @@ def get_VMT_calculation(datapoint):
 
 def create_car_line_data(years, all_data, VMT):
     """ Example:
-    [['2021', 'rgba(0, 200, 0, 1)', [['0', 0], ['1', 0], ['2', 0], ['3', 0], ['4', 0], ['5', 0], ['6', 0], ['7', 0],
-    ['8', 0], ['9', 0], ['10', 0], ['11', 0]]], ['2022', 'rgba(200, 0, 0, 1)', [['0', 0], ['1', 0], ['2',
+    [['2021', 'rgba(0, 200, 0, 1)', 2, [['0', 0], ['1', 0], ['2', 0], ['3', 0], ['4', 0], ['5', 0], ['6', 0], ['7', 0],
+    ['8', 0], ['9', 0], ['10', 0], ['11', 0]]], ['2022', 'rgba(200, 0, 0, 1)', 2, [['0', 0], ['1', 0], ['2',
     0]]]] car_miles_line_data: [['2021', 'rgba(0, 200, 0, 1)', [['0', 550], ['1', 1203], ['2', 1722], ['3', 1864],
     ['4', 1808], ['5', 1302], ['6', 2499], ['7', 1461], ['8', 741], ['9', 1508], ['10', 785], ['11', 1592]]],
-    ['2022', 'rgba(200, 0, 0, 1)', [['0', 391], ['1', 896]]]]
+    ['2022', 'rgba(200, 0, 0, 1)', 2, [['0', 391], ['1', 896]]]]
     """
     if all_data:
         line_data = []
@@ -261,6 +262,7 @@ def create_car_line_data(years, all_data, VMT):
             this_year_line_data = []
             this_year_line_data.append(str(year))
             this_year_line_data.append(colors[count])
+            this_year_line_data.append(2)
 
             data = []
             for reading in all_data:
